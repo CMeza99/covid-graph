@@ -13,6 +13,8 @@ from pathlib import Path
 from subprocess import run
 from typing import Dict, Sequence
 
+import matplotlib
+from matplotlib import pyplot
 from pkg_resources import DistributionNotFound, RequirementParseError, get_distribution
 
 
@@ -100,7 +102,7 @@ class Stats:
         return self._confirmed - self._deaths - self._recovered
 
     @staticmethod
-    def _datestr(date_field):
+    def _datestr(date_field) -> str:
         if "/" in date_field:
             rawdate = date_field.split(" ")[0]
             month, day, year = tuple(int(x) for x in rawdate.split("/"))
@@ -182,11 +184,11 @@ def main():
         sys.exit()
 
     data = get_infected_state_data(args.state)
-    with tempfile.NamedTemporaryFile(mode="w") as datfile:
-        for key in sorted(data):
-            datfile.write(f"{key}\t{data[key]}\n")
-        datfile.flush()
-        run(["gnuplot", "-p", "-e", f"datfile='{datfile.name}'", "./covid.gp"], check=True)
+    matplotlib.use("AGG")
+    pyplot.gca().set_title(f"COVID-19 {args.state.capitalize()}")
+    pyplot.plot(list(data.keys()), list(data.values()))
+    pyplot.gcf().autofmt_xdate()
+    pyplot.savefig("output.png")
 
 
 def _create_parser() -> argparse.ArgumentParser:

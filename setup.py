@@ -7,6 +7,7 @@ from setuptools import setup
 setup(
     name="covid",
     py_modules=["covid"],
+    install_requires=["matplotlib>=3.2,<4"],
     entry_points={"console_scripts": ["covid=covid:main"]},
     setup_requires=["setuptools_scm"],
     use_scm_version=True,
